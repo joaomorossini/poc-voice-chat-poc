@@ -12,8 +12,8 @@
 
 # --- Project Identity ---
 project:
-  name: "My AI Assistant"
-  slug: "my-ai-assistant"           # Used for container names, DNS, branch prefixes
+  name: "voice-chat-poc"
+  slug: "voice-chat-poc"           # Used for container names, DNS, branch prefixes
   description: "An AI-powered assistant with domain-specific tools"
 
 # --- Branding ---
@@ -61,7 +61,7 @@ memory:
 providers:
   # Primary provider for agent conversations
   primary:
-    name: "anthropic"               # openAI | anthropic | google | bedrock | custom
+    name: "voice-chat-poc"               # openAI | anthropic | google | bedrock | custom
     model: "claude-sonnet-4-6"
     # For custom endpoints (e.g., Fuel iX):
     # name: "custom"

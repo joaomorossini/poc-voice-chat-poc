@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+# Uncomment the providers you need:
+# pipecat-ai[smallwebrtc,openai,silero]
+# pipecat-ai[deepgram,elevenlabs,anthropic]

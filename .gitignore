@@ -1,0 +1,40 @@
+# Secrets
+.env
+
+# Generated configs (regenerate with `make bootstrap`)
+librechat.yaml
+docker-compose.override.yml
+.github/workflows/arden-fleet.yml
+
+# LibreChat symlinks
+librechat/.env
+librechat/librechat.yaml
+librechat/docker-compose.override.yml
+
+# Docker volumes
+data-node/
+meili_data*/
+pgdata*/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Node
+node_modules/
+
+# MCP server data (mock databases, etc.)
+mcp-servers/*/data/
+
+# Local artifacts
+.local/

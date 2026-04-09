@@ -1,0 +1,30 @@
+# ============================================================================
+# Base Docker Compose — Minimal (app + mongodb)
+# ============================================================================
+# This is the minimal viable deployment. The bootstrap script generates
+# docker-compose.override.yml at the repo root with additional services
+# based on project.yaml features.
+#
+# Usage: cd librechat && docker compose up
+# ============================================================================
+
+services:
+  api:
+    image: ${PROJECT_SLUG:-my-ai-assistant}:local
+    container_name: ${PROJECT_SLUG:-my-ai-assistant}
+    ports:
+      - "${PORT:-3080}:${PORT:-3080}"
+    env_file:
+      - ../.env
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:8.0
+    container_name: ${PROJECT_SLUG:-my-ai-assistant}-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data-node:/data/db
+    restart: unless-stopped

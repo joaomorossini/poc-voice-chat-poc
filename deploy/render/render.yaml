@@ -1,0 +1,57 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Deploy: connect your GitHub repo to Render and it reads this file.
+
+services:
+  - type: web
+    name: api
+    runtime: docker
+    dockerfilePath: app/Dockerfile
+    dockerContext: .
+    envVars:
+      - key: PORT
+        value: "3080"
+      - key: CONFIG_PATH
+        value: /app/librechat.yaml
+      - fromGroup: librechat-secrets
+    healthCheckPath: /api/health
+
+  - type: private
+    name: mongodb
+    runtime: image
+    image:
+      url: mongo:8.0
+    disk:
+      name: mongodb-data
+      mountPath: /data/db
+      sizeGB: 1
+
+  - type: private
+    name: meilisearch
+    runtime: image
+    image:
+      url: getmeili/meilisearch:v1.35.1
+    disk:
+      name: meili-data
+      mountPath: /meili_data
+      sizeGB: 1
+    envVars:
+      - key: MEILI_MASTER_KEY
+        fromGroup: librechat-secrets
+
+envVarGroups:
+  - name: librechat-secrets
+    envVars:
+      - key: MONGO_URI
+        generateValue: false
+      - key: ANTHROPIC_API_KEY
+        generateValue: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: CREDS_KEY
+        generateValue: true
+      - key: CREDS_IV
+        generateValue: true
+      - key: MEILI_MASTER_KEY
+        generateValue: true

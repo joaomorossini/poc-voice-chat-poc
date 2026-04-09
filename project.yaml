@@ -1,0 +1,147 @@
+# ============================================================================
+# Project Configuration
+# ============================================================================
+# This is the single config surface for your project.
+# Run `make bootstrap` (or `./scripts/bootstrap.sh`) after editing.
+# The bootstrap script reads this file and generates:
+#   - librechat.yaml (LibreChat configuration)
+#   - .env (environment variables and secrets)
+#   - docker-compose.override.yml (service topology)
+#   - Symlinks from librechat/ to root-level config files
+# ============================================================================
+
+# --- Project Identity ---
+project:
+  name: "My AI Assistant"
+  slug: "my-ai-assistant"           # Used for container names, DNS, branch prefixes
+  description: "An AI-powered assistant with domain-specific tools"
+
+# --- Branding ---
+theme:
+  # HSL values (without the hsl() wrapper) — injected into CSS variables
+  primary: "220 70% 55%"            # Main brand color
+  accent: "45 80% 55%"              # Accent / CTA color
+  background_dark: "#0a0a1a"        # Dark mode background
+  background_light: "#ffffff"        # Light mode background
+  font_heading: "Inter"             # Google Fonts name
+  font_body: "Inter"
+  font_mono: "JetBrains Mono"
+  logo: "app/public/images/logo.png" # Path to logo file (replace with your own)
+
+# --- Features ---
+# Toggle features on/off. Disabling a feature removes its containers and config.
+features:
+  rag: false                        # RAG API + PGVector (file indexing, semantic search)
+  search: true                      # Meilisearch (full-text conversation search)
+  voice: false                      # Pipecat voice sidecar (WebRTC, real-time STT/TTS)
+  code_interpreter: false           # Sandboxed code execution
+  web_search: true                  # Agent-initiated web search
+  memory: true                      # Cross-session user memory (key/value store)
+  agent_chain: false                # Mixture-of-Agents sequential pipeline (Beta)
+  agent_handoffs: true              # Dynamic agent-to-agent transfer (Beta)
+  agent_builder: false              # End-user agent creation UI (disable for controlled deployments)
+  ocr: false                        # Image-to-text for uploaded files
+  artifacts: true                   # Interactive content (React, HTML, Mermaid)
+
+# --- Memory ---
+# Only relevant when features.memory is true
+memory:
+  token_limit: 4000
+  char_limit: 10000
+  message_window_size: 5
+  valid_keys:
+    - user_preferences
+    - project_context
+    - learned_patterns
+  agent:
+    provider: "anthropic"           # Provider for the memory agent (use a cheap/fast model)
+    model: "claude-haiku-4-5-20251001"
+
+# --- LLM Providers ---
+providers:
+  # Primary provider for agent conversations
+  primary:
+    name: "anthropic"               # openAI | anthropic | google | bedrock | custom
+    model: "claude-sonnet-4-6"
+    # For custom endpoints (e.g., Fuel iX):
+    # name: "custom"
+    # base_url: "https://api.fuelix.ai/v1"
+    # api_key_env: "FUELIX_API_KEY"   # Name of the env var (value goes in .env)
+    # models: ["claude-sonnet-4-6", "claude-haiku-4-5-20251001"]
+
+# --- MCP Servers ---
+# Domain-specific MCP servers. Each entry becomes a service in docker-compose
+# and is registered in librechat.yaml.
+mcp_servers:
+  - name: "example-database"
+    path: "mcp-servers/database"
+    port: 8001
+    type: "streamable-http"         # streamable-http | stdio
+    enabled: true
+    env:
+      DB_PATH: "data/example.db"
+
+  - name: "example-api"
+    path: "mcp-servers/api-wrapper"
+    port: 8002
+    type: "streamable-http"
+    enabled: true
+    env:
+      API_BASE_URL: "https://api.example.com"
+
+  - name: "example-knowledge"
+    path: "mcp-servers/knowledge"
+    port: 8003
+    type: "streamable-http"
+    enabled: true
+    env:
+      KNOWLEDGE_DIR: "data/knowledge"
+
+  - name: "example-delegate"
+    path: "mcp-servers/agent-delegate"
+    port: 8004
+    type: "streamable-http"
+    enabled: false                  # Enable when you have multiple agents configured
+    env:
+      LIBRECHAT_API_URL: "http://api:3080"
+
+# --- Agents ---
+# Pre-built agents. Each becomes an agent in LibreChat (synced via bootstrap).
+agents:
+  - name: "Assistant"
+    description: "General-purpose assistant with domain tools"
+    prompt_file: "app/prompts/assistant.md"
+    model: "claude-sonnet-4-6"
+    capabilities:
+      - tools
+      - web_search
+      - artifacts
+    mcp_servers:
+      - "example-database"
+      - "example-api"
+      - "example-knowledge"
+
+# --- Voice (Pipecat) ---
+# Only relevant when features.voice is true
+voice:
+  transport: "smallwebrtc"          # smallwebrtc | daily | livekit
+  stt_tts: "openai-realtime"        # openai-realtime | modular
+  # When stt_tts is "modular":
+  # stt_provider: "deepgram"
+  # tts_provider: "elevenlabs"
+  # llm_provider: "anthropic"
+  video_enabled: false
+  prompt_file: "app/prompts/voice.md"
+
+# --- Deployment ---
+deploy:
+  target: "docker-compose"          # docker-compose | railway | digitalocean | render
+  domain: ""                        # Production domain (empty = localhost)
+  port: 3080
+
+# --- Quality ---
+# ARDEN fleet integration for PR review automation
+arden_fleet:
+  enabled: true                     # Set to false to skip ARDEN CI workflows
+  # When enabled, bootstrap generates .github/workflows/ for:
+  # WARDEN (security), HARDEN (QA), JORDEN (design), GARDEN (docs), BARDEN (PM)

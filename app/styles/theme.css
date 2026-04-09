@@ -1,0 +1,21 @@
+/* ==========================================================================
+ * Default Theme — override via project.yaml and `make bootstrap`
+ * ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono&display=swap');
+
+:root {
+  --brand-primary: 220 70% 55%;
+  --brand-accent: 45 80% 55%;
+  --font-heading: 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.dark {
+  --main-surface-primary: #0a0a1a;
+}
+
+.light {
+  --main-surface-primary: #ffffff;
+}

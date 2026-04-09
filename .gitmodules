@@ -1,0 +1,6 @@
+[submodule "librechat"]
+	path = librechat
+	url = https://github.com/danny-avila/LibreChat.git
+[submodule "pipecat"]
+	path = pipecat
+	url = https://github.com/pipecat-ai/pipecat.git

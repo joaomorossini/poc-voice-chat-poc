@@ -6,9 +6,14 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy upstream LibreChat source
-COPY librechat/package*.json ./
-COPY librechat/ ./
+# Clone upstream LibreChat source at pinned version
+# (submodule not initialized in Railway CI — cloning directly)
+RUN apk add --no-cache git && \
+    git init && \
+    git remote add origin https://github.com/danny-avila/LibreChat.git && \
+    git fetch --depth 1 origin 0736ff26686e911c9785a237c63a799db1813f0b && \
+    git checkout FETCH_HEAD && \
+    apk del git
 
 # Install dependencies
 RUN npm ci
